@@ -4,10 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LifeOS — Seu Painel de Vida</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        @font-face {
+          font-family: 'Poppins';
+          font-style: normal;
+          font-weight: 300;
+          font-display: swap;
+          src: url(https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLDz8V1tvEv-L.ttf) format('truetype');
+        }
+        @font-face {
+          font-family: 'Poppins';
+          font-style: normal;
+          font-weight: 400;
+          font-display: swap;
+          src: url(https://fonts.gstatic.com/s/poppins/v20/pxiEyp8kv8JHgFVrFJDUdVNF.ttf) format('truetype');
+        }
+        @font-face {
+          font-family: 'Poppins';
+          font-style: normal;
+          font-weight: 500;
+          font-display: swap;
+          src: url(https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLGT9V1tvEv-L.ttf) format('truetype');
+        }
+        @font-face {
+          font-family: 'Poppins';
+          font-style: normal;
+          font-weight: 600;
+          font-display: swap;
+          src: url(https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLEj6V1tvEv-L.ttf) format('truetype');
+        }
+        @font-face {
+          font-family: 'Poppins';
+          font-style: normal;
+          font-weight: 700;
+          font-display: swap;
+          src: url(https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLCz7V1tvEv-L.ttf) format('truetype');
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -41,7 +74,6 @@
 
         .container { max-width: 600px; margin: 0 auto; padding: 15px; }
 
-        /* CABEÇALHO */
         header {
             text-align: center;
             padding: 20px 15px;
@@ -54,7 +86,6 @@
         .relogio { font-size: 2.5rem; font-weight: 700; line-height: 1; }
         .data { font-size: 1rem; opacity: 0.9; margin-top: 5px; }
 
-        /* NAVEGAÇÃO ABA */
         .navegacao {
             display: flex;
             gap: 8px;
@@ -85,7 +116,6 @@
             box-shadow: 0 4px 12px rgba(255,123,0,0.3);
         }
 
-        /* CARTÕES */
         .cartao {
             background: var(--cartao);
             border-radius: 16px;
@@ -109,7 +139,6 @@
             gap: 8px;
         }
 
-        /* BARRA DE PROGRESSO */
         .barra-fundo {
             height: 10px;
             background: var(--borda);
@@ -125,7 +154,6 @@
         }
         .pct-texto { text-align: right; font-size: 0.8rem; color: var(--texto-claro); margin-top: 4px; }
 
-        /* CHECKLIST */
         .item-check {
             display: flex;
             align-items: center;
@@ -156,7 +184,6 @@
             color: white;
         }
 
-        /* ROTINA */
         .rotina-linha {
             display: flex;
             justify-content: space-between;
@@ -166,12 +193,10 @@
         }
         .rotina-hora { color: var(--destaque); font-weight: 600; }
 
-        /* ESTUDOS — BARRAS */
         .estudo-item { margin-bottom: 12px; }
         .estudo-cab { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.9rem; }
         .pct { font-weight: 600; }
 
-        /* POMODORO */
         .pomodoro { text-align: center; padding: 10px; }
         .tempo-pomo { font-size: 3.5rem; font-weight: 700; font-family: monospace; }
         .botoes-pomo { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
@@ -186,7 +211,6 @@
         .btn-principal { background: var(--destaque); color: white; }
         .btn-secundario { background: var(--borda); color: var(--texto); }
 
-        /* INPUTS */
         input, textarea, select {
             width: 100%;
             padding: 10px 12px;
@@ -201,7 +225,6 @@
         input:focus, textarea:focus { border-color: var(--destaque); }
         textarea { resize: vertical; min-height: 80px; }
 
-        /* GRID ESTATÍSTICAS */
         .grade {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -216,7 +239,6 @@
         .grade-valor { font-size: 1.4rem; font-weight: 700; color: var(--destaque); }
         .grade-nome { font-size: 0.75rem; color: var(--texto-claro); margin-top: 3px; }
 
-        /* FINANÇAS */
         .linha-financa {
             display: flex;
             justify-content: space-between;
@@ -227,11 +249,9 @@
         .entrada { color: var(--sucesso); }
         .saida { color: var(--perigo); }
 
-        /* OCULTAR ABAS */
         .pagina { display: none; }
         .pagina.visivel { display: block; }
 
-        /* BOTÃO SALVAR */
         .btn-salvar {
             width: 100%;
             padding: 12px;
@@ -248,13 +268,11 @@
 <body>
 
 <div class="container">
-    <!-- CABEÇALHO -->
     <header>
         <div class="relogio" id="relogio">00:00:00</div>
         <div class="data" id="data"></div>
     </header>
 
-    <!-- NAVEGAÇÃO -->
     <nav class="navegacao">
         <button class="aba-btn ativa" data-pagina="dashboard">🏠 Início</button>
         <button class="aba-btn" data-pagina="rotina">📅 Rotina</button>
@@ -265,9 +283,6 @@
         <button class="aba-btn" data-pagina="stats">📊 Estatísticas</button>
     </nav>
 
-    <!-- ====================================== -->
-    <!-- PÁGINA 1 — DASHBOARD -->
-    <!-- ====================================== -->
     <div class="pagina visivel" id="dashboard">
         <div class="cartao">
             <h2 id="saudacao"></h2>
@@ -289,9 +304,6 @@
         </div>
     </div>
 
-    <!-- ====================================== -->
-    <!-- PÁGINA 2 — ROTINA -->
-    <!-- ====================================== -->
     <div class="pagina" id="rotina">
         <div class="cartao">
             <h2>⏰ Meu Horário</h2>
@@ -319,9 +331,6 @@
         </div>
     </div>
 
-    <!-- ====================================== -->
-    <!-- PÁGINA 3 — ESTUDOS -->
-    <!-- ====================================== -->
     <div class="pagina" id="estudos">
         <div class="cartao">
             <h2>📚 Plano de Estudos TI</h2>
@@ -368,9 +377,6 @@
         </div>
     </div>
 
-    <!-- ====================================== -->
-    <!-- PÁGINA 4 — ACADEMIA -->
-    <!-- ====================================== -->
     <div class="pagina" id="academia">
         <div class="cartao">
             <h2>⚖️ Meu Peso</h2>
@@ -388,9 +394,6 @@
         </div>
     </div>
 
-    <!-- ====================================== -->
-    <!-- PÁGINA 5 — TRABALHO BK -->
-    <!-- ====================================== -->
     <div class="pagina" id="trabalho">
         <div class="cartao">
             <h2>🍔 Escala de Trabalho</h2>
@@ -405,9 +408,6 @@
         </div>
     </div>
 
-    <!-- ====================================== -->
-    <!-- PÁGINA 6 — FINANÇAS -->
-    <!-- ====================================== -->
     <div class="pagina" id="financas">
         <div class="cartao">
             <h2>💰 Saldo Atual</h2>
@@ -429,9 +429,6 @@
         </div>
     </div>
 
-    <!-- ====================================== -->
-    <!-- PÁGINA 7 — ESTATÍSTICAS -->
-    <!-- ====================================== -->
     <div class="pagina" id="stats">
         <div class="cartao">
             <h2>📈 Resumo Geral</h2>
@@ -460,11 +457,14 @@
 </div>
 
 <script>
-// =============================================
-// DADOS PRINCIPAIS
-// =============================================
 const hoje = new Date().toISOString().split('T')[0];
-let dados = JSON.parse(localStorage.getItem('lifeOS')) || {
+let dados;
+try {
+    dados = JSON.parse(localStorage.getItem('lifeOS')) || {};
+} catch {
+    dados = {};
+}
+dados = {
     ultimaData: '',
     checklist: { treino:false, agua:false, alimentacao:false, estudo:false, leitura:false, sono:false },
     estudos: { html:0, css:0, js:0, git:0, python:0, bd:0 },
@@ -478,12 +478,20 @@ let dados = JSON.parse(localStorage.getItem('lifeOS')) || {
     diasCumpridos:0,
     sequencia:0,
     horasEstudo:0,
-    treinosTotais:0
+    treinosTotais:0,
+    ...dados
 };
 
-// =============================================
-// RELÓGIO E DATA
-// =============================================
+function salvar() {
+    try {
+        localStorage.setItem('lifeOS', JSON.stringify(dados));
+        renderizarTudo();
+    } catch (erro) {
+        alert('Armazenamento cheio ou desativado!');
+        console.error(erro);
+    }
+}
+
 function atualizarRelogio() {
     const d = new Date();
     const h = String(d.getHours()).padStart(2,'0');
@@ -505,17 +513,6 @@ function saudacao() {
     return '🌙 Boa noite!';
 }
 
-// =============================================
-// SALVAR E CARREGAR
-// =============================================
-function salvar() {
-    localStorage.setItem('lifeOS', JSON.stringify(dados));
-    renderizarTudo();
-}
-
-// =============================================
-// NOVO DIA — RESETA CHECKLIST
-// =============================================
 if (dados.ultimaData !== hoje) {
     const concluidas = Object.values(dados.checklist).filter(v => v).length;
     if (concluidas >= 4) {
@@ -531,9 +528,6 @@ if (dados.ultimaData !== hoje) {
     salvar();
 }
 
-// =============================================
-// NAVEGAÇÃO ENTRE ABAS
-// =============================================
 document.querySelectorAll('.aba-btn').forEach(btn => {
     btn.onclick = () => {
         document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('ativa'));
@@ -543,9 +537,6 @@ document.querySelectorAll('.aba-btn').forEach(btn => {
     };
 });
 
-// =============================================
-// CHECKLIST
-// =============================================
 const itensCheck = [
     {id:'treino', icone:'💪', texto:'Fazer treino na academia'},
     {id:'agua', icone:'💧', texto:'Beber 2L de água'},
@@ -572,18 +563,19 @@ function alternarCheck(id) {
     dados.checklist[id] = !dados.checklist[id];
     if (id === 'treino' && dados.checklist[id]) dados.treinosTotais++;
     salvar();
+    renderizarChecklist();
+    atualizarProgresso();
 }
 
 function resetarChecklist() {
     if (confirm('Desmarcar todas as tarefas de hoje?')) {
         dados.checklist = { treino:false, agua:false, alimentacao:false, estudo:false, leitura:false, sono:false };
         salvar();
+        renderizarChecklist();
+        atualizarProgresso();
     }
 }
 
-// =============================================
-// PROGRESSO DO DIA
-// =============================================
 function atualizarProgresso() {
     const total = itensCheck.length;
     const concluidas = Object.values(dados.checklist).filter(v => v).length;
@@ -592,9 +584,6 @@ function atualizarProgresso() {
     document.getElementById('pctProgresso').textContent = `${concluidas}/${total} — ${pct}%`;
 }
 
-// =============================================
-// ESTUDOS
-// =============================================
 function atualizarProgressoEstudos() {
     const html = prompt('Progresso HTML/CSS (0-100):', dados.estudos.html);
     const js = prompt('Progresso JavaScript (0-100):', dados.estudos.js);
@@ -611,9 +600,6 @@ function atualizarProgressoEstudos() {
     salvar();
 }
 
-// =============================================
-// POMODORO
-// =============================================
 let tempoPomo = 25 * 60;
 let timerPomo = null;
 
@@ -652,9 +638,6 @@ function resetarPomodoro() {
     atualizarTempoPomo();
 }
 
-// =============================================
-// ACADEMIA
-// =============================================
 function salvarPeso() {
     const atual = parseFloat(document.getElementById('pesoAtual').value) || 0;
     const meta = parseFloat(document.getElementById('pesoMeta').value) || 0;
@@ -666,9 +649,6 @@ function salvarPeso() {
     salvar();
 }
 
-// =============================================
-// FINANÇAS
-// =============================================
 function lancarMovimento() {
     const desc = document.getElementById('descricaoMov').value.trim();
     const valor = parseFloat(document.getElementById('valorMov').value) || 0;
@@ -683,18 +663,13 @@ function lancarMovimento() {
     salvar();
 }
 
-// =============================================
-// RENDERIZAR TUDO
-// =============================================
 function renderizarTudo() {
     document.getElementById('saudacao').textContent = saudacao();
     document.getElementById('data').textContent = dataCompleta();
 
-    // Checklist e Progresso
     renderizarChecklist();
     atualizarProgresso();
 
-    // Estudos
     document.getElementById('pctHtml').textContent = dados.estudos.html + '%';
     document.getElementById('barraHtml').style.width = dados.estudos.html + '%';
     document.getElementById('pctJs').textContent = dados.estudos.js + '%';
@@ -707,24 +682,19 @@ function renderizarTudo() {
     document.getElementById('barraBd').style.width = dados.estudos.bd + '%';
     document.getElementById('sessoesHoje').textContent = dados.sessoesPomodoro;
 
-    // Anotações
     document.getElementById('anotacoes').value = dados.anotacoes;
 
-    // Academia
     document.getElementById('pesoAtual').value = dados.academia.pesoAtual || '';
     document.getElementById('pesoMeta').value = dados.academia.pesoMeta || '';
     const dif = dados.academia.pesoMeta - dados.academia.pesoAtual;
     document.getElementById('textoEvolucao').textContent = dif > 0 ? `Faltam ${dif.toFixed(1)}kg` : '✅ Meta atingida!';
 
-    // Sono
     document.getElementById('horaDormir').value = dados.sono.dormir;
     document.getElementById('horaAcordar').value = dados.sono.acordar;
 
-    // Trabalho
     document.getElementById('escalaTrabalho').value = dados.trabalho.escala;
     document.getElementById('tarefasTrabalho').value = dados.trabalho.tarefas;
 
-    // Finanças
     document.getElementById('saldo').textContent = dados.financas.saldo.toFixed(2).replace('.',',');
     document.getElementById('historicoMov').innerHTML = dados.financas.movimentos.slice(0,10).map(m => `
         <div class="linha-financa">
@@ -733,7 +703,6 @@ function renderizarTudo() {
         </div>
     `).join('');
 
-    // Estatísticas
     document.getElementById('statDias').textContent = dados.diasContados;
     document.getElementById('statTreinos').textContent = dados.treinosTotais;
     document.getElementById('statEstudo').textContent = Math.round(dados.horasEstudo) + 'h';
@@ -741,19 +710,23 @@ function renderizarTudo() {
     document.getElementById('seqDias').textContent = dados.sequencia;
 }
 
-// =============================================
-// SALVAR DADOS SOLTOS
-// =============================================
 document.getElementById('anotacoes').oninput = e => { dados.anotacoes = e.target.value; salvar(); };
 document.getElementById('horaDormir').onchange = e => { dados.sono.dormir = e.target.value; salvar(); };
 document.getElementById('horaAcordar').onchange = e => { dados.sono.acordar = e.target.value; salvar(); };
+
 window.salvarAnotacoes = () => alert('✅ Salvo!');
 window.salvarEscala = () => { dados.trabalho.escala = document.getElementById('escalaTrabalho').value; salvar(); alert('✅ Escala salva!'); };
 window.salvarTarefasTrabalho = () => { dados.trabalho.tarefas = document.getElementById('tarefasTrabalho').value; salvar(); alert('✅ Tarefas salvas!'); };
 
-// =============================================
-// INICIAR
-// =============================================
+window.alternarCheck = alternarCheck;
+window.resetarChecklist = resetarChecklist;
+window.atualizarProgressoEstudos = atualizarProgressoEstudos;
+window.iniciarPomodoro = iniciarPomodoro;
+window.pararPomodoro = pararPomodoro;
+window.resetarPomodoro = resetarPomodoro;
+window.salvarPeso = salvarPeso;
+window.lancarMovimento = lancarMovimento;
+
 atualizarRelogio();
 setInterval(atualizarRelogio, 1000);
 renderizarTudo();
