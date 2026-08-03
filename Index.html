@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeOS — Seu Painel de Vida</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --fundo: #0f172a;
+            --fundo-claro: #1e293b;
+            --cartao: #1e293b;
+            --destaque: #ff7b00;
+            --destaque-escuro: #e66a00;
+            --sucesso: #10b981;
+            --alerta: #f59e0b;
+            --perigo: #ef4444;
+            --info: #3b82f6;
+            --roxo: #8b5cf6;
+            --texto: #f1f5f9;
+            --texto-claro: #94a3b8;
+            --borda: #334155;
+            --sombra: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        body {
+            background: var(--fundo);
+            color: var(--texto);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 15px; }
+
+        /* CABEÇALHO */
+        header {
+            text-align: center;
+            padding: 20px 15px;
+            background: linear-gradient(135deg, var(--destaque), var(--destaque-escuro));
+            margin: -15px -15px 20px -15px;
+            border-radius: 0 0 24px 24px;
+            box-shadow: var(--sombra);
+        }
+
+        .relogio { font-size: 2.5rem; font-weight: 700; line-height: 1; }
+        .data { font-size: 1rem; opacity: 0.9; margin-top: 5px; }
+
+        /* NAVEGAÇÃO ABA */
+        .navegacao {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            scrollbar-width: none;
+        }
+        .navegacao::-webkit-scrollbar { display: none; }
+
+        .aba-btn {
+            padding: 10px 14px;
+            background: var(--cartao);
+            border: 1px solid var(--borda);
+            color: var(--texto-claro);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all .3s;
+        }
+
+        .aba-btn.ativa {
+            background: var(--destaque);
+            color: white;
+            border-color: var(--destaque);
+            box-shadow: 0 4px 12px rgba(255,123,0,0.3);
+        }
+
+        /* CARTÕES */
+        .cartao {
+            background: var(--cartao);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+            border: 1px solid var(--borda);
+            animation: aparecer .4s ease;
+        }
+
+        @keyframes aparecer {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .cartao h2 {
+            font-size: 1rem;
+            margin-bottom: 14px;
+            color: var(--destaque);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* BARRA DE PROGRESSO */
+        .barra-fundo {
+            height: 10px;
+            background: var(--borda);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .barra-ativa {
+            height: 100%;
+            background: linear-gradient(90deg, var(--destaque), var(--sucesso));
+            border-radius: 5px;
+            width: 0%;
+            transition: width .6s ease;
+        }
+        .pct-texto { text-align: right; font-size: 0.8rem; color: var(--texto-claro); margin-top: 4px; }
+
+        /* CHECKLIST */
+        .item-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--borda);
+            cursor: pointer;
+            transition: opacity .2s;
+        }
+        .item-check:last-child { border-bottom: none; }
+        .item-check.feito { opacity: 0.6; }
+        .item-check.feito .texto { text-decoration: line-through; color: var(--texto-claro); }
+
+        .caixa {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--borda);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all .2s;
+        }
+        .item-check.feito .caixa {
+            background: var(--sucesso);
+            border-color: var(--sucesso);
+            color: white;
+        }
+
+        /* ROTINA */
+        .rotina-linha {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--borda);
+            font-size: 0.9rem;
+        }
+        .rotina-hora { color: var(--destaque); font-weight: 600; }
+
+        /* ESTUDOS — BARRAS */
+        .estudo-item { margin-bottom: 12px; }
+        .estudo-cab { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.9rem; }
+        .pct { font-weight: 600; }
+
+        /* POMODORO */
+        .pomodoro { text-align: center; padding: 10px; }
+        .tempo-pomo { font-size: 3.5rem; font-weight: 700; font-family: monospace; }
+        .botoes-pomo { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-principal { background: var(--destaque); color: white; }
+        .btn-secundario { background: var(--borda); color: var(--texto); }
+
+        /* INPUTS */
+        input, textarea, select {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--fundo);
+            border: 1px solid var(--borda);
+            border-radius: 10px;
+            color: var(--texto);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            outline: none;
+        }
+        input:focus, textarea:focus { border-color: var(--destaque); }
+        textarea { resize: vertical; min-height: 80px; }
+
+        /* GRID ESTATÍSTICAS */
+        .grade {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .grade-card {
+            background: var(--fundo);
+            padding: 12px 8px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .grade-valor { font-size: 1.4rem; font-weight: 700; color: var(--destaque); }
+        .grade-nome { font-size: 0.75rem; color: var(--texto-claro); margin-top: 3px; }
+
+        /* FINANÇAS */
+        .linha-financa {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--borda);
+            font-size: 0.9rem;
+        }
+        .entrada { color: var(--sucesso); }
+        .saida { color: var(--perigo); }
+
+        /* OCULTAR ABAS */
+        .pagina { display: none; }
+        .pagina.visivel { display: block; }
+
+        /* BOTÃO SALVAR */
+        .btn-salvar {
+            width: 100%;
+            padding: 12px;
+            background: var(--destaque);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- CABEÇALHO -->
+    <header>
+        <div class="relogio" id="relogio">00:00:00</div>
+        <div class="data" id="data"></div>
+    </header>
+
+    <!-- NAVEGAÇÃO -->
+    <nav class="navegacao">
+        <button class="aba-btn ativa" data-pagina="dashboard">🏠 Início</button>
+        <button class="aba-btn" data-pagina="rotina">📅 Rotina</button>
+        <button class="aba-btn" data-pagina="estudos">💻 Estudos</button>
+        <button class="aba-btn" data-pagina="academia">💪 Academia</button>
+        <button class="aba-btn" data-pagina="trabalho">🍔 Trabalho</button>
+        <button class="aba-btn" data-pagina="financas">💰 Finanças</button>
+        <button class="aba-btn" data-pagina="stats">📊 Estatísticas</button>
+    </nav>
+
+    <!-- ====================================== -->
+    <!-- PÁGINA 1 — DASHBOARD -->
+    <!-- ====================================== -->
+    <div class="pagina visivel" id="dashboard">
+        <div class="cartao">
+            <h2 id="saudacao"></h2>
+            <p style="font-size:0.9rem; color:var(--texto-claro); margin-bottom:12px;">Resumo do seu dia</p>
+            <div class="barra-fundo">
+                <div class="barra-ativa" id="barraProgresso"></div>
+            </div>
+            <p class="pct-texto" id="pctProgresso">0% concluído</p>
+        </div>
+
+        <div class="cartao">
+            <h2>🎯 Metas de Hoje</h2>
+            <div id="metasHoje"></div>
+        </div>
+
+        <div class="cartao">
+            <h2>📋 Próximos Passos</h2>
+            <div id="proximos"></div>
+        </div>
+    </div>
+
+    <!-- ====================================== -->
+    <!-- PÁGINA 2 — ROTINA -->
+    <!-- ====================================== -->
+    <div class="pagina" id="rotina">
+        <div class="cartao">
+            <h2>⏰ Meu Horário</h2>
+            <div class="rotina-linha"><span>🌅 Acordar</span><span class="rotina-hora">06:00</span></div>
+            <div class="rotina-linha"><span>💪 Academia</span><span class="rotina-hora">06:30</span></div>
+            <div class="rotina-linha"><span>🍳 Café</span><span class="rotina-hora">08:30</span></div>
+            <div class="rotina-linha"><span>🍔 Trabalho BK</span><span class="rotina-hora">09:30 — 15:00</span></div>
+            <div class="rotina-linha"><span>💻 Estudos TI</span><span class="rotina-hora">15:30 — 18:00</span></div>
+            <div class="rotina-linha"><span>🌙 Dormir</span><span class="rotina-hora">22:30</span></div>
+        </div>
+
+        <div class="cartao">
+            <h2>✅ Checklist Diário</h2>
+            <div id="checklist"></div>
+            <button class="btn-salvar" onclick="resetarChecklist()">🔄 Resetar Dia</button>
+        </div>
+
+        <div class="cartao">
+            <h2>🌙 Controle de Sono</h2>
+            <label style="font-size:0.85rem; color:var(--texto-claro);">Hora de dormir</label>
+            <input type="time" id="horaDormir">
+            <label style="font-size:0.85rem; color:var(--texto-claro);">Hora de acordar</label>
+            <input type="time" id="horaAcordar">
+            <p style="margin-top:8px; font-size:0.9rem;">⏳ Horas dormidas: <span id="horasSono">0h</span></p>
+        </div>
+    </div>
+
+    <!-- ====================================== -->
+    <!-- PÁGINA 3 — ESTUDOS -->
+    <!-- ====================================== -->
+    <div class="pagina" id="estudos">
+        <div class="cartao">
+            <h2>📚 Plano de Estudos TI</h2>
+            <div class="estudo-item">
+                <div class="estudo-cab"><span>🌐 HTML & CSS</span><span class="pct" id="pctHtml">0%</span></div>
+                <div class="barra-fundo"><div class="barra-ativa" id="barraHtml" style="width:0%; background:#f59e0b;"></div></div>
+            </div>
+            <div class="estudo-item">
+                <div class="estudo-cab"><span>⚡ JavaScript</span><span class="pct" id="pctJs">0%</span></div>
+                <div class="barra-fundo"><div class="barra-ativa" id="barraJs" style="width:0%; background:#3b82f6;"></div></div>
+            </div>
+            <div class="estudo-item">
+                <div class="estudo-cab"><span>🐙 Git & GitHub</span><span class="pct" id="pctGit">0%</span></div>
+                <div class="barra-fundo"><div class="barra-ativa" id="barraGit" style="width:0%; background:#8b5cf6;"></div></div>
+            </div>
+            <div class="estudo-item">
+                <div class="estudo-cab"><span>🐍 Python</span><span class="pct" id="pctPy">0%</span></div>
+                <div class="barra-fundo"><div class="barra-ativa" id="barraPy" style="width:0%; background:#10b981;"></div></div>
+            </div>
+            <div class="estudo-item">
+                <div class="estudo-cab"><span>🗄️ Banco de Dados</span><span class="pct" id="pctBd">0%</span></div>
+                <div class="barra-fundo"><div class="barra-ativa" id="barraBd" style="width:0%; background:#ef4444;"></div></div>
+            </div>
+            <button class="btn-salvar" onclick="atualizarProgressoEstudos()">✏️ Atualizar Progresso</button>
+        </div>
+
+        <div class="cartao">
+            <h2>🍅 Pomodoro</h2>
+            <div class="pomodoro">
+                <div class="tempo-pomo" id="tempoPomo">25:00</div>
+                <div class="botoes-pomo">
+                    <button class="btn btn-principal" onclick="iniciarPomodoro()">▶️ Iniciar</button>
+                    <button class="btn btn-secundario" onclick="pararPomodoro()">⏹️ Parar</button>
+                    <button class="btn btn-secundario" onclick="resetarPomodoro()">🔄</button>
+                </div>
+                <p style="margin-top:10px; font-size:0.85rem; color:var(--texto-claro);">Sessões concluídas hoje: <span id="sessoesHoje">0</span></p>
+            </div>
+        </div>
+
+        <div class="cartao">
+            <h2>📝 Anotações</h2>
+            <textarea id="anotacoes" placeholder="Suas anotações de estudos..."></textarea>
+            <button class="btn-salvar" onclick="salvarAnotacoes()">💾 Salvar</button>
+        </div>
+    </div>
+
+    <!-- ====================================== -->
+    <!-- PÁGINA 4 — ACADEMIA -->
+    <!-- ====================================== -->
+    <div class="pagina" id="academia">
+        <div class="cartao">
+            <h2>⚖️ Meu Peso</h2>
+            <label style="font-size:0.85rem; color:var(--texto-claro);">Peso atual (kg)</label>
+            <input type="number" step="0.1" id="pesoAtual" placeholder="Ex: 72.5">
+            <label style="font-size:0.85rem; color:var(--texto-claro);">Meta de peso (kg)</label>
+            <input type="number" step="0.1" id="pesoMeta" placeholder="Ex: 80">
+            <button class="btn-salvar" onclick="salvarPeso()">💾 Salvar Peso</button>
+            <p style="margin-top:12px; font-size:0.95rem;">📊 Evolução: <span id="textoEvolucao">0 kg</span></p>
+        </div>
+        <div class="cartao">
+            <h2>🏋️ Frequência</h2>
+            <p>Treinos essa semana: <span id="treinosSemana">0</span> dias</p>
+            <p>Sequência atual: <span id="sequenciaTreino">0</span> dias 🔥</p>
+        </div>
+    </div>
+
+    <!-- ====================================== -->
+    <!-- PÁGINA 5 — TRABALHO BK -->
+    <!-- ====================================== -->
+    <div class="pagina" id="trabalho">
+        <div class="cartao">
+            <h2>🍔 Escala de Trabalho</h2>
+            <label style="font-size:0.85rem; color:var(--texto-claro);">Meu turno essa semana</label>
+            <textarea id="escalaTrabalho" placeholder="Ex: Seg a Sex: 09:30-15:00"></textarea>
+            <button class="btn-salvar" onclick="salvarEscala()">💾 Salvar Escala</button>
+        </div>
+        <div class="cartao">
+            <h2>✅ Tarefas do Trabalho</h2>
+            <textarea id="tarefasTrabalho" placeholder="Tarefas a cumprir no trabalho..."></textarea>
+            <button class="btn-salvar" onclick="salvarTarefasTrabalho()">💾 Salvar</button>
+        </div>
+    </div>
+
+    <!-- ====================================== -->
+    <!-- PÁGINA 6 — FINANÇAS -->
+    <!-- ====================================== -->
+    <div class="pagina" id="financas">
+        <div class="cartao">
+            <h2>💰 Saldo Atual</h2>
+            <p style="font-size:2rem; font-weight:700; color:var(--sucesso);">R$ <span id="saldo">0,00</span></p>
+        </div>
+        <div class="cartao">
+            <h2>➕ Lançar</h2>
+            <input type="text" id="descricaoMov" placeholder="Descrição">
+            <input type="number" step="0.01" id="valorMov" placeholder="Valor R$">
+            <select id="tipoMov">
+                <option value="entrada">💰 Entrada</option>
+                <option value="saida">📉 Saída</option>
+            </select>
+            <button class="btn-salvar" onclick="lancarMovimento()">✅ Registrar</button>
+        </div>
+        <div class="cartao">
+            <h2>📊 Histórico</h2>
+            <div id="historicoMov"></div>
+        </div>
+    </div>
+
+    <!-- ====================================== -->
+    <!-- PÁGINA 7 — ESTATÍSTICAS -->
+    <!-- ====================================== -->
+    <div class="pagina" id="stats">
+        <div class="cartao">
+            <h2>📈 Resumo Geral</h2>
+            <div class="grade">
+                <div class="grade-card">
+                    <div class="grade-valor" id="statDias">0</div>
+                    <div class="grade-nome">Dias registrados</div>
+                </div>
+                <div class="grade-card">
+                    <div class="grade-valor" id="statTreinos">0</div>
+                    <div class="grade-nome">Treinos totais</div>
+                </div>
+                <div class="grade-card">
+                    <div class="grade-valor" id="statEstudo">0h</div>
+                    <div class="grade-nome">Horas de estudo</div>
+                </div>
+            </div>
+        </div>
+        <div class="cartao">
+            <h2>🎯 Aproveitamento</h2>
+            <p>Dias com rotina cumprida: <span id="diasCumpridos">0</span></p>
+            <p>Sequência de dias produtivos: <span id="seqDias">0</span> dias 🔥</p>
+            <p>Meta de economia: <span id="metaEconomia">Em andamento</span></p>
+        </div>
+    </div>
+</div>
+
+<script>
+// =============================================
+// DADOS PRINCIPAIS
+// =============================================
+const hoje = new Date().toISOString().split('T')[0];
+let dados = JSON.parse(localStorage.getItem('lifeOS')) || {
+    ultimaData: '',
+    checklist: { treino:false, agua:false, alimentacao:false, estudo:false, leitura:false, sono:false },
+    estudos: { html:0, css:0, js:0, git:0, python:0, bd:0 },
+    academia: { pesoAtual:0, pesoMeta:0, historico:[] },
+    trabalho: { escala:'', tarefas:'' },
+    financas: { saldo:0, movimentos:[] },
+    sono: { dormir:'22:30', acordar:'06:00' },
+    anotacoes: '',
+    sessoesPomodoro:0,
+    diasContados:0,
+    diasCumpridos:0,
+    sequencia:0,
+    horasEstudo:0,
+    treinosTotais:0
+};
+
+// =============================================
+// RELÓGIO E DATA
+// =============================================
+function atualizarRelogio() {
+    const d = new Date();
+    const h = String(d.getHours()).padStart(2,'0');
+    const m = String(d.getMinutes()).padStart(2,'0');
+    const s = String(d.getSeconds()).padStart(2,'0');
+    document.getElementById('relogio').textContent = `${h}:${m}:${s}`;
+}
+
+function dataCompleta() {
+    const d = new Date();
+    const dias = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+    return `${dias[d.getDay()]}, ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+}
+
+function saudacao() {
+    const h = new Date().getHours();
+    if (h < 12) return '☀️ Bom dia!';
+    if (h < 18) return '🌤️ Boa tarde!';
+    return '🌙 Boa noite!';
+}
+
+// =============================================
+// SALVAR E CARREGAR
+// =============================================
+function salvar() {
+    localStorage.setItem('lifeOS', JSON.stringify(dados));
+    renderizarTudo();
+}
+
+// =============================================
+// NOVO DIA — RESETA CHECKLIST
+// =============================================
+if (dados.ultimaData !== hoje) {
+    const concluidas = Object.values(dados.checklist).filter(v => v).length;
+    if (concluidas >= 4) {
+        dados.diasCumpridos++;
+        dados.sequencia++;
+    } else {
+        dados.sequencia = 0;
+    }
+    dados.ultimaData = hoje;
+    dados.checklist = { treino:false, agua:false, alimentacao:false, estudo:false, leitura:false, sono:false };
+    dados.sessoesPomodoro = 0;
+    dados.diasContados++;
+    salvar();
+}
+
+// =============================================
+// NAVEGAÇÃO ENTRE ABAS
+// =============================================
+document.querySelectorAll('.aba-btn').forEach(btn => {
+    btn.onclick = () => {
+        document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('ativa'));
+        document.querySelectorAll('.pagina').forEach(p => p.classList.remove('visivel'));
+        btn.classList.add('ativa');
+        document.getElementById(btn.dataset.pagina).classList.add('visivel');
+    };
+});
+
+// =============================================
+// CHECKLIST
+// =============================================
+const itensCheck = [
+    {id:'treino', icone:'💪', texto:'Fazer treino na academia'},
+    {id:'agua', icone:'💧', texto:'Beber 2L de água'},
+    {id:'alimentacao', icone:'🍽️', texto:'Manter alimentação correta'},
+    {id:'estudo', icone:'💻', texto:'Estudar TI (mínimo 2h)'},
+    {id:'leitura', icone:'📖', texto:'Ler 10 páginas'},
+    {id:'sono', icone:'🌙', texto:'Dormir até às 22:30'}
+];
+
+function renderizarChecklist() {
+    const container = document.getElementById('checklist');
+    container.innerHTML = itensCheck.map(item => {
+        const feito = dados.checklist[item.id] ? 'feito' : '';
+        return `
+            <div class="item-check ${feito}" data-id="${item.id}" onclick="alternarCheck('${item.id}')">
+                <div class="caixa">✓</div>
+                <span class="texto">${item.icone} ${item.texto}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function alternarCheck(id) {
+    dados.checklist[id] = !dados.checklist[id];
+    if (id === 'treino' && dados.checklist[id]) dados.treinosTotais++;
+    salvar();
+}
+
+function resetarChecklist() {
+    if (confirm('Desmarcar todas as tarefas de hoje?')) {
+        dados.checklist = { treino:false, agua:false, alimentacao:false, estudo:false, leitura:false, sono:false };
+        salvar();
+    }
+}
+
+// =============================================
+// PROGRESSO DO DIA
+// =============================================
+function atualizarProgresso() {
+    const total = itensCheck.length;
+    const concluidas = Object.values(dados.checklist).filter(v => v).length;
+    const pct = Math.round((concluidas / total) * 100);
+    document.getElementById('barraProgresso').style.width = pct + '%';
+    document.getElementById('pctProgresso').textContent = `${concluidas}/${total} — ${pct}%`;
+}
+
+// =============================================
+// ESTUDOS
+// =============================================
+function atualizarProgressoEstudos() {
+    const html = prompt('Progresso HTML/CSS (0-100):', dados.estudos.html);
+    const js = prompt('Progresso JavaScript (0-100):', dados.estudos.js);
+    const git = prompt('Progresso Git/GitHub (0-100):', dados.estudos.git);
+    const py = prompt('Progresso Python (0-100):', dados.estudos.python);
+    const bd = prompt('Progresso Banco de Dados (0-100):', dados.estudos.bd);
+
+    if (html) dados.estudos.html = parseInt(html) || 0;
+    if (js) dados.estudos.js = parseInt(js) || 0;
+    if (git) dados.estudos.git = parseInt(git) || 0;
+    if (py) dados.estudos.python = parseInt(py) || 0;
+    if (bd) dados.estudos.bd = parseInt(bd) || 0;
+
+    salvar();
+}
+
+// =============================================
+// POMODORO
+// =============================================
+let tempoPomo = 25 * 60;
+let timerPomo = null;
+
+function atualizarTempoPomo() {
+    const m = Math.floor(tempoPomo / 60);
+    const s = tempoPomo % 60;
+    document.getElementById('tempoPomo').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function iniciarPomodoro() {
+    if (timerPomo) return;
+    timerPomo = setInterval(() => {
+        tempoPomo--;
+        atualizarTempoPomo();
+        if (tempoPomo <= 0) {
+            clearInterval(timerPomo);
+            timerPomo = null;
+            alert('🍅 Tempo concluído! Hora de descansar!');
+            dados.sessoesPomodoro++;
+            dados.horasEstudo += 0.42;
+            salvar();
+            tempoPomo = 25 * 60;
+            atualizarTempoPomo();
+        }
+    }, 1000);
+}
+
+function pararPomodoro() {
+    clearInterval(timerPomo);
+    timerPomo = null;
+}
+
+function resetarPomodoro() {
+    pararPomodoro();
+    tempoPomo = 25 * 60;
+    atualizarTempoPomo();
+}
+
+// =============================================
+// ACADEMIA
+// =============================================
+function salvarPeso() {
+    const atual = parseFloat(document.getElementById('pesoAtual').value) || 0;
+    const meta = parseFloat(document.getElementById('pesoMeta').value) || 0;
+    if (atual) {
+        dados.academia.pesoAtual = atual;
+        dados.academia.historico.push({ data: hoje, peso: atual });
+    }
+    dados.academia.pesoMeta = meta;
+    salvar();
+}
+
+// =============================================
+// FINANÇAS
+// =============================================
+function lancarMovimento() {
+    const desc = document.getElementById('descricaoMov').value.trim();
+    const valor = parseFloat(document.getElementById('valorMov').value) || 0;
+    const tipo = document.getElementById('tipoMov').value;
+    if (!desc || valor <= 0) return alert('Preencha os dados corretamente!');
+
+    dados.financas.movimentos.unshift({ data: hoje, desc, valor, tipo });
+    dados.financas.saldo += tipo === 'entrada' ? valor : -valor;
+
+    document.getElementById('descricaoMov').value = '';
+    document.getElementById('valorMov').value = '';
+    salvar();
+}
+
+// =============================================
+// RENDERIZAR TUDO
+// =============================================
+function renderizarTudo() {
+    document.getElementById('saudacao').textContent = saudacao();
+    document.getElementById('data').textContent = dataCompleta();
+
+    // Checklist e Progresso
+    renderizarChecklist();
+    atualizarProgresso();
+
+    // Estudos
+    document.getElementById('pctHtml').textContent = dados.estudos.html + '%';
+    document.getElementById('barraHtml').style.width = dados.estudos.html + '%';
+    document.getElementById('pctJs').textContent = dados.estudos.js + '%';
+    document.getElementById('barraJs').style.width = dados.estudos.js + '%';
+    document.getElementById('pctGit').textContent = dados.estudos.git + '%';
+    document.getElementById('barraGit').style.width = dados.estudos.git + '%';
+    document.getElementById('pctPy').textContent = dados.estudos.python + '%';
+    document.getElementById('barraPy').style.width = dados.estudos.python + '%';
+    document.getElementById('pctBd').textContent = dados.estudos.bd + '%';
+    document.getElementById('barraBd').style.width = dados.estudos.bd + '%';
+    document.getElementById('sessoesHoje').textContent = dados.sessoesPomodoro;
+
+    // Anotações
+    document.getElementById('anotacoes').value = dados.anotacoes;
+
+    // Academia
+    document.getElementById('pesoAtual').value = dados.academia.pesoAtual || '';
+    document.getElementById('pesoMeta').value = dados.academia.pesoMeta || '';
+    const dif = dados.academia.pesoMeta - dados.academia.pesoAtual;
+    document.getElementById('textoEvolucao').textContent = dif > 0 ? `Faltam ${dif.toFixed(1)}kg` : '✅ Meta atingida!';
+
+    // Sono
+    document.getElementById('horaDormir').value = dados.sono.dormir;
+    document.getElementById('horaAcordar').value = dados.sono.acordar;
+
+    // Trabalho
+    document.getElementById('escalaTrabalho').value = dados.trabalho.escala;
+    document.getElementById('tarefasTrabalho').value = dados.trabalho.tarefas;
+
+    // Finanças
+    document.getElementById('saldo').textContent = dados.financas.saldo.toFixed(2).replace('.',',');
+    document.getElementById('historicoMov').innerHTML = dados.financas.movimentos.slice(0,10).map(m => `
+        <div class="linha-financa">
+            <span>${m.desc}</span>
+            <span class="${m.tipo}">${m.tipo === 'entrada' ? '+' : '-'}R$ ${m.valor.toFixed(2).replace('.',',')}</span>
+        </div>
+    `).join('');
+
+    // Estatísticas
+    document.getElementById('statDias').textContent = dados.diasContados;
+    document.getElementById('statTreinos').textContent = dados.treinosTotais;
+    document.getElementById('statEstudo').textContent = Math.round(dados.horasEstudo) + 'h';
+    document.getElementById('diasCumpridos').textContent = dados.diasCumpridos;
+    document.getElementById('seqDias').textContent = dados.sequencia;
+}
+
+// =============================================
+// SALVAR DADOS SOLTOS
+// =============================================
+document.getElementById('anotacoes').oninput = e => { dados.anotacoes = e.target.value; salvar(); };
+document.getElementById('horaDormir').onchange = e => { dados.sono.dormir = e.target.value; salvar(); };
+document.getElementById('horaAcordar').onchange = e => { dados.sono.acordar = e.target.value; salvar(); };
+window.salvarAnotacoes = () => alert('✅ Salvo!');
+window.salvarEscala = () => { dados.trabalho.escala = document.getElementById('escalaTrabalho').value; salvar(); alert('✅ Escala salva!'); };
+window.salvarTarefasTrabalho = () => { dados.trabalho.tarefas = document.getElementById('tarefasTrabalho').value; salvar(); alert('✅ Tarefas salvas!'); };
+
+// =============================================
+// INICIAR
+// =============================================
+atualizarRelogio();
+setInterval(atualizarRelogio, 1000);
+renderizarTudo();
+</script>
+</body>
+</html>
